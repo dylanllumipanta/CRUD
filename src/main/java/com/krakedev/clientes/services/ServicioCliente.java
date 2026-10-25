@@ -10,49 +10,46 @@ import com.krakedev.clientes.entidades.Cliente;
 @Service
 public class ServicioCliente {
 
-	private ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+    private final List<Cliente> clientes = new ArrayList<>();
 
-	public Cliente buscarPorCedula(String cedula) {
-	    for (Cliente c : clientes) {
-	        if (c.getCedula().equals(cedula)) {
-	            return c;
-	        }
-	    }
-	    return null;
-	}
+    public Cliente crearCliente(Cliente cliente) {
+        clientes.add(cliente);
+        return cliente;
+    }
 
-	public Cliente crear(Cliente cliente) {
-	    Cliente existente = buscarPorCedula(cliente.getCedula());
-	    if (existente != null) {
-	        return null;
-	    } else {
-	        clientes.add(cliente);
-	        return cliente;
-	    }
-	}
-	
-	public List<Cliente> listar() {
-	    return clientes;
-	}
+    public List<Cliente> consultarClientes() {
+        return clientes;
+    }
 
-	public Cliente actualizar(String cedula, Cliente clienteActualizado) {
-	    Cliente cliente = buscarPorCedula(cedula);
+    public Cliente consultarCliente(String cedula) {
+        for (Cliente cliente : clientes) {
+            if (cliente.getCedula().equals(cedula)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
 
-	    if (cliente != null) {
-	        cliente.setNombre(clienteActualizado.getNombre());
-	        cliente.setApellido(clienteActualizado.getApellido());
-	    }
+    public Cliente actualizarCliente(String cedula, Cliente clienteActualizado) {
+        Cliente cliente = consultarCliente(cedula);
 
-	    return cliente;
-	}
+        if (cliente != null) {
+            cliente.setNombre(clienteActualizado.getNombre());
+            cliente.setApellido(clienteActualizado.getApellido());
+            cliente.setEmail(clienteActualizado.getEmail());
+        }
 
-	public boolean eliminar(String cedula) {
-	    Cliente cliente = buscarPorCedula(cedula);
-	    if (cliente != null) {
-	        clientes.remove(cliente);
-	        return true;
-	    }else {
-		return false;
-	    }
-	}
+        return cliente;
+    }
+
+    public boolean eliminarCliente(String cedula) {
+        Cliente cliente = consultarCliente(cedula);
+
+        if (cliente != null) {
+            clientes.remove(cliente);
+            return true;
+        }
+
+        return false;
+    }
 }
