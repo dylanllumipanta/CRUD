@@ -2,6 +2,8 @@ package com.krakedev.clientes.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,30 +20,56 @@ import com.krakedev.clientes.services.ServicioCliente;
 @RequestMapping("/clientes")
 public class ClienteController {
 
-    private final ServicioCliente servicioCliente = new ServicioCliente();
-    
+    private final ServicioCliente servicioCliente;
+
+    public ClienteController(ServicioCliente servicioCliente) {
+        this.servicioCliente = servicioCliente;
+    }
+
     @PostMapping
-    public Cliente crear(@RequestBody Cliente cliente) {
-        return servicioCliente.crear(cliente);
+    public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente) {
+        Cliente creado = servicioCliente.crearCliente(cliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     @GetMapping
-    public List<Cliente> listar() {
-        return servicioCliente.listar();
+    public ResponseEntity<List<Cliente>> consultarClientes() {
+        return ResponseEntity.ok(servicioCliente.consultarClientes());
     }
 
     @GetMapping("/{cedula}")
-    public Cliente buscar(@PathVariable String cedula) {
-        return servicioCliente.buscarPorCedula(cedula);
+    public ResponseEntity<Cliente> consultarCliente(@PathVariable String cedula) {
+        Cliente cliente = servicioCliente.consultarCliente(cedula);
+
+        if (cliente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(cliente);
     }
-    
+
     @PutMapping("/{cedula}")
-    public Cliente actualizar(@PathVariable String cedula, @RequestBody Cliente clienteActualizado) {
-        return servicioCliente.actualizar(cedula, clienteActualizado);
+    public ResponseEntity<Cliente> actualizarCliente(
+            @PathVariable String cedula,
+            @RequestBody Cliente cliente) {
+
+        Cliente actualizado = servicioCliente.actualizarCliente(cedula, cliente);
+
+        if (actualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(actualizado);
     }
-    
+
     @DeleteMapping("/{cedula}")
-    public boolean eliminar(@PathVariable String cedula) {
-        return servicioCliente.eliminar(cedula);
+    public ResponseEntity<Void> eliminarCliente(@PathVariable String cedula) {
+        boolean eliminado = servicioCliente.eliminarCliente(cedula);
+
+        if (!eliminado) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }
